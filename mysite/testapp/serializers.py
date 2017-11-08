@@ -2,8 +2,7 @@ from rest_framework import serializers
 from testapp.models import Shopping, ShoppingItem, ShopingItemBase
 
 class ShopingItemBaseSerializer(serializers.ModelSerializer):
-	# item_type = serializers.ReadOnlyField(source='child')
-	item_type = ShopingItemBaseSerializer(source='child')
+	item_type = serializers.ReadOnlyField(source='child')
 	class Meta:
 		model = ShopingItemBase
 		fields = '__all__'
