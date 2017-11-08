@@ -26,3 +26,4 @@ from testapp.models import Shopping, ShoppingItem
 sh = Shopping.objects.get(id=2)
 s = ShoppingSerializer(sh)
 '''
+# item_type = ShopingItemBaseSerializer(source='child')
