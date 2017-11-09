@@ -51,7 +51,10 @@ class ShopingItemBase(models.Model):
     @property
     def child(self):
         child = getattr(self, self.shopping_type)
-        return child.__dict__
+        return child
+
+    def get_model_fields(self):
+        return self._meta.fields
 
 
 class ShoppingItemNormal(ShopingItemBase):

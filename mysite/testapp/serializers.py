@@ -1,8 +1,19 @@
 from rest_framework import serializers
 from testapp.models import Shopping, ShoppingItem, ShopingItemBase
 
+
+class CustomSerializer(serializers.BaseSerializer):
+     def to_representation(self, obj):
+        result = dict()
+        fields = obj.get_model_fields()
+        for field in fields:
+            field_as_str = str(field).split('.')[-1]
+            value = str(getattr(obj, field_as_str))
+            result[field_as_str] = value
+        return result
+
 class ShopingItemBaseSerializer(serializers.ModelSerializer):
-	item_type = serializers.ReadOnlyField(source='child')
+	item_type = CustomSerializer(source='child')
 	class Meta:
 		model = ShopingItemBase
 		fields = '__all__'
