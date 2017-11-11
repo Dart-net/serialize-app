@@ -9,16 +9,16 @@ from django.utils.translation import ugettext_lazy as _
 class Shopping(models.Model):
     """ The class represents Shopping basic info """
 
-    RECEIPT_TYPE = (
-        ('type1', 'Basic'),
-        ('type2', 'Intermediate'),
-        ('type3', 'Advanced'),
+    SHOPPING_TYPE = (
+        ('basic', 'Basic'),
+        ('intermediate', 'Intermediate'),
+        ('advanced', 'Advanced'),
     )
 
     name = models.CharField(max_length=128, blank=False)
     issued = models.DateTimeField(auto_now_add=True)
     printed = models.BooleanField(default=False)
-    rtype = models.CharField(max_length=16, choices=RECEIPT_TYPE, default='normal',)
+    rtype = models.CharField(max_length=16, choices=SHOPPING_TYPE, default='normal',)
 
     def __str__(self):
         return self.name
@@ -26,74 +26,35 @@ class Shopping(models.Model):
     class Meta:
         ordering = ('issued',)
 
-
 class ShoppingItem(models.Model):
 
-    RECEIPT_ITEM_TYPE = (
-        ('normal', 'normal'),
-        ('test', 'test')
+    SHOPPING_ITEM_TYPE = (
+        ('normal1', 'Basic'),
+        ('normal2', 'Intermediate'),
+        ('normal3', 'Advanced'),
     )
 
     shopping = models.ForeignKey('Shopping', on_delete=models.CASCADE,)
     rix = models.PositiveSmallIntegerField()
-    ritype = models.CharField(max_length=16, choices=RECEIPT_ITEM_TYPE, default='normal',)
+    ritype = models.CharField(max_length=16, choices=SHOPPING_ITEM_TYPE, default='normal1',)
 
-class ShopingItemBase(models.Model):
-
-    SHOPPING_CHILD_CLASS_NAMES = (
-        ('shoppingitemnormal', 'shoppingitemnormal'),
-        ('shoppingitemnormal2', 'shoppingitemnormal2')
-    )
-
+class ShoppingItemBase(models.Model):
     shopping_item = models.OneToOneField('ShoppingItem', related_name='details', on_delete=models.CASCADE, null=True)
-    shopping_type = models.CharField(max_length=255, choices=SHOPPING_CHILD_CLASS_NAMES, default='ShoppingItemNormal',)
 
     @property
     def child(self):
-        child = getattr(self, self.shopping_type)
+        if self.shopping_item.ritype == 'normal1':
+            child = self.shoppingitemnormal1
+        elif self.shopping_item.ritype == 'normal2':
+            child = self.shoppingitemnormal2
+        else:
+            child = None
         return child
 
-    def get_model_fields(self):
-        return self._meta.fields
+class ShoppingItemNormal1(ShoppingItemBase):
+    name = models.CharField(max_length=128, blank=False, default='meno')
+    color = models.CharField(max_length=128, blank=False, default='cierna')
 
-
-class ShoppingItemNormal(ShopingItemBase):
-    name = models.CharField(max_length=128, blank=False, default='test')
-    color = models.CharField(max_length=128, blank=False, default='blue')
-
-class ShoppingItemNormal2(ShopingItemBase):
-    title = models.CharField(max_length=128, blank=False, default='title')
-    text = models.CharField(max_length=128, blank=False, default='text')
-
-
-# class ShoppingItem(models.Model):
-
-    # RECEIPT_ITEM_TYPE = (
-    #     ('normal', 'normal'),
-    #     ('test', 'test')
-    # )
-
-#     rix = models.PositiveSmallIntegerField()
-#     shopping = models.ForeignKey('Shopping', on_delete=models.CASCADE,)
-#     ritype = models.CharField(max_length=16, choices=RECEIPT_ITEM_TYPE, default='normal',)
-
-
-# class ShoppingItemNormal(models.Model):
-#     shopping_item = models.OneToOneField('ShoppingItem', on_delete=models.CASCADE,)
-#     name = models.CharField(max_length=128, blank=False)
-#     unit_price = models.DecimalField(max_digits=20,decimal_places=10)
-#     unit_si = models.CharField(max_length=16, blank=False)
-#     quantity = models.DecimalField(max_digits=20,decimal_places=10)
-#     value = models.DecimalField(max_digits=24,decimal_places=10)
-#     vat = models.FloatField()
-#     vat_class = models.CharField(max_length=16, blank=False)
-    # currency = models.CharField(max_length=3, choices=CURRENCY_LIST, blank=False)
-
-# class ShoppingItemType(models.Model):
-#     name = models.CharField(max_length=128, blank=False)
-#     unit_price = models.DecimalField(max_digits=20,decimal_places=10)
-#     unit_si = models.CharField(max_length=16, blank=False)
-#     quantity = models.DecimalField(max_digits=20,decimal_places=10)
-#     value = models.DecimalField(max_digits=24,decimal_places=10)
-#     vat = models.FloatField()
-#     vat_class = models.CharField(max_length=16, blank=False)
+class ShoppingItemNormal2(ShoppingItemBase):
+    title = models.CharField(max_length=128, blank=False, default='nazov')
+    text = models.CharField(max_length=128, blank=False, default='popis')
