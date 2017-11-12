@@ -8,7 +8,6 @@ from django.utils.six import BytesIO
 
 s = Shopping(name='test')
 s.save()
-
 si = ShoppingItem(shopping=s,rix=12)
 si.save()
 sin = ShoppingItemNormal1(name='skuska', color='black', shopping_item=si)
@@ -30,7 +29,19 @@ stream = BytesIO(b'{"rix": 12, "ritype": "normal1", "data": {"name": "skuska", "
 #stream = BytesIO(b'{"name": "test", "issued": "2017-11-11T22:46:50.279797Z", "printed": false, "rtype": "normal", "items": [{"rix": 12, "ritype": "normal1", "data": {"name": "skuska", "color": "black"}}, {"rix": 13, "ritype": "normal2", "data": {"title": "title", "text": "text"}}]}')
 data = JSONParser().parse(stream)
 print(data)
+
+from testapp.serializers import ShoppingSerializer, ShoppingItemSerializer
+from testapp.models import Shopping, ShoppingItem, ShoppingItemNormal1, ShoppingItemNormal2
+data = {
+	'shopping' : 3,
+	'rix'      : 12,
+	'ritype'   : "normal1",
+	'data'     : {"name": "skuska", "color": "black"},
+	'username' : 'Dart'
+}
 serializer = ShoppingItemSerializer(data=data)
 print(serializer.is_valid())
+
 print(serializer.validated_data)
 print(serializer.errors)
+

@@ -35,8 +35,8 @@ class ShoppingItem(models.Model):
     )
 
     shopping = models.ForeignKey('Shopping', on_delete=models.CASCADE,)
-    rix = models.PositiveSmallIntegerField()
-    ritype = models.CharField(max_length=16, choices=SHOPPING_ITEM_TYPE, default='normal1',)
+    rix      = models.PositiveSmallIntegerField()
+    ritype   = models.CharField(max_length=16, choices=SHOPPING_ITEM_TYPE, default='normal1',)
 
 class ShoppingItemBase(models.Model):
     shopping_item = models.OneToOneField('ShoppingItem', related_name='details', on_delete=models.CASCADE, null=True)
@@ -49,6 +49,7 @@ class ShoppingItemBase(models.Model):
             child = self.shoppingitemnormal2
         else:
             child = None
+        print('Child type: ', type(child))
         return child
 
 class ShoppingItemNormal1(ShoppingItemBase):

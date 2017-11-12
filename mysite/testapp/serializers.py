@@ -30,20 +30,33 @@ class CustomSerializer(serializers.Serializer):
 #        fields = ('item_type',)
 
 class ShoppingItemSerializer(serializers.ModelSerializer):
-    data = CustomSerializer(source='details.child')
+    child = CustomSerializer(source='details.child')
 
     class Meta:
         model = ShoppingItem
-        fields = ('rix', 'ritype', 'data')
+        fields = ('rix', 'ritype', 'shopping', 'child')
 
-    def to_internal_value(self, data):
-        super(ShoppingItemSerializer, self).to_internal_value(data)
+    def create(self, validated_data):
+        details = validated_data.pop('details')
+        child = details['child']
+        item = ShoppingItem.objects.create(**validated_data)
+        child['shopping_item'] = item
+        if item.ritype == 'normal1':
+            ShoppingItemNormal1.objects.create(**child)
+        elif item.ritype == 'normal2':
+            ShoppingItemNormal2.objects.create(**child)
+        return item
 
-#    def validate_data(self, data):
-#        pass
+    def to_internal_value(self, data): # TODO
+        child = data['child']
+        data  = super(ShoppingItemSerializer, self).to_internal_value(data)
+        data['details']['child'] = child
+        return data
 
-    def to_internal_value(self, data):
-        super(ShoppingItemSerializer, self).to_internal_value(data)
+    # def validate_data(self, value):
+    #     print('Validate: ', value)
+    #     return value
+
 
 class ShoppingSerializer(serializers.ModelSerializer):
     items = ShoppingItemSerializer(source='shoppingitem_set', many=True)
