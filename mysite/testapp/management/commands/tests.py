@@ -16,7 +16,7 @@ class Command(BaseCommand):
             'shopping' : shopping.id, # id of Shopping
             'rix'      : 12,
             'ritype'   : "normal1",
-            'child'     : {"name": "Dart", "color": "black"},
+            'child'     : {"name": "Fabien", "color": "black"},
             # 'child'     : {"title": "Dart", "text": "white"},
         }
         print('Create from data %s' % data)

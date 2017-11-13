@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from testapp.models import Shopping, ShoppingItem, ShoppingItemBase, ShoppingItemNormal1, ShoppingItemNormal2
 
+
 class ShoppingItemNormal1Serializer(serializers.ModelSerializer):
     class Meta:
         model = ShoppingItemNormal1
@@ -41,10 +42,8 @@ class ShoppingItemSerializer(serializers.ModelSerializer):
         child = details['child']
         item = ShoppingItem.objects.create(**validated_data)
         child['shopping_item'] = item
-        if item.ritype == 'normal1':
-            ShoppingItemNormal1.objects.create(**child)
-        elif item.ritype == 'normal2':
-            ShoppingItemNormal2.objects.create(**child)
+        ChildClass = item.get_child_class() # get child class via instance
+        ChildClass.objects.create(**child)
         return item
 
     def to_internal_value(self, data): # TODO
@@ -52,6 +51,26 @@ class ShoppingItemSerializer(serializers.ModelSerializer):
         data  = super(ShoppingItemSerializer, self).to_internal_value(data)
         data['details']['child'] = child
         return data
+
+    def validate(self, data):
+        child = data['details']['child']
+        ChildClass = self.Meta.model.get_child_class_by_type(data['ritype']) # get child via static method
+        for attr, value in child.items():
+            if not hasattr(ChildClass, attr):
+                raise serializers.ValidationError("Attribute error: %s has no attr: `%s` " % (str(ChildClass), attr))
+        return data    
+
+        # _class = self.Meta.model
+        # print('Validate:', dir(self))
+        # print('Class: ', self.__class__)
+        # print('Model: ', )
+        # ChildClass = ShoppingItem.
+        # print('Current object: ', self)
+        # child = data['details']['child']
+        # print('Validate child: ', child)
+
+    # def validate_child(self, value):
+    #     print('Current object: ', self)
 
     # def validate_data(self, value):
     #     print('Validate: ', value)
