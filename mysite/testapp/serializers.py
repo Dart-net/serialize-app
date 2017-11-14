@@ -67,9 +67,8 @@ class ShoppingItemSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         ch = data['details']['child']
-        ChildClass = self.get_child_class_by_type(data['ritype']) # get child via static method
-        ChildClass().to_internal_value(ch) #self.child.get_serializer(ChildClass)
-
+        ChildClassSerializer = self.get_child_class_by_type(data['ritype']) # get child via static method
+        ChildClassSerializer().to_internal_value(ch) #self.child.get_serializer(ChildClass)
         return data
 
         # _class = self.Meta.model
