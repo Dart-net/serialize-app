@@ -14,14 +14,14 @@ class ShoppingItemNormal2Serializer(serializers.ModelSerializer):
 
 class CustomSerializer(serializers.Serializer):
     @classmethod
-    def _get_serializer(cls, model):
+    def get_serializer(self, model):
         if model == ShoppingItemNormal1:
             return ShoppingItemNormal1Serializer
         elif model == ShoppingItemNormal2:
             return ShoppingItemNormal2Serializer
 
     def to_representation(self, instance):
-        serializer = self._get_serializer(instance.__class__)
+        serializer = self.get_serializer(instance.__class__)
         return serializer(instance, context=self.context).data
 
 #class ShoppingItemBaseSerializer(serializers.ModelSerializer):
@@ -37,6 +37,16 @@ class ShoppingItemSerializer(serializers.ModelSerializer):
         model = ShoppingItem
         fields = ('rix', 'ritype', 'shopping', 'child')
 
+    def get_child_class_by_type(self, _type):
+        ''' Determine Item child class model by `ritype`. Use elsewhere as static method.'''
+        ChildClass = ShoppingItemNormal1Serializer
+        if _type == 'normal1':
+            ChildClass = ShoppingItemNormal1Serializer
+        elif _type == 'normal2':
+            ChildClass = ShoppingItemNormal2Serializer
+        return ChildClass
+
+
     def create(self, validated_data):
         details = validated_data.pop('details')
         child = details['child']
@@ -46,19 +56,21 @@ class ShoppingItemSerializer(serializers.ModelSerializer):
         ChildClass.objects.create(**child)
         return item
 
-    def to_internal_value(self, data): # TODO
-        child = data['child']
+    def to_internal_value(self, data):
+        try:
+            ch = data['child']
+        except:
+            pass
         data  = super(ShoppingItemSerializer, self).to_internal_value(data)
-        data['details']['child'] = child
+        data['details']['child'] = ch
         return data
 
     def validate(self, data):
-        child = data['details']['child']
-        ChildClass = self.Meta.model.get_child_class_by_type(data['ritype']) # get child via static method
-        for attr, value in child.items():
-            if not hasattr(ChildClass, attr):
-                raise serializers.ValidationError("Attribute error: %s has no attr: `%s` " % (str(ChildClass), attr))
-        return data    
+        ch = data['details']['child']
+        ChildClass = self.get_child_class_by_type(data['ritype']) # get child via static method
+        ChildClass().to_internal_value(ch) #self.child.get_serializer(ChildClass)
+
+        return data
 
         # _class = self.Meta.model
         # print('Validate:', dir(self))

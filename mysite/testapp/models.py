@@ -38,7 +38,7 @@ class ShoppingItem(models.Model):
     rix      = models.PositiveSmallIntegerField()
     ritype   = models.CharField(max_length=16, choices=SHOPPING_ITEM_TYPE, default='normal1',)
 
-    def get_child_class_by_type(_type):
+    def get_child_class_by_type(self, _type):
         ''' Determine Item child class model by `ritype`. Use elsewhere as static method.'''
         ChildClass = ShoppingItemNormal1
         if _type == 'normal1':
@@ -49,7 +49,7 @@ class ShoppingItem(models.Model):
 
     def get_child_class(self):
         ''' Get child class model via static method `get_child_class_by_type`. Use only by instances of ShoppingItem.'''
-        return self.__class__.get_child_class_by_type(self.ritype)
+        return self.get_child_class_by_type(self.ritype)
 
 class ShoppingItemBase(models.Model):
     shopping_item = models.OneToOneField('ShoppingItem', related_name='details', on_delete=models.CASCADE, null=True)

@@ -33,10 +33,10 @@ print(data)
 from testapp.serializers import ShoppingSerializer, ShoppingItemSerializer
 from testapp.models import Shopping, ShoppingItem, ShoppingItemNormal1, ShoppingItemNormal2
 data = {
-	'shopping' : 3,
+	'shopping' : s.id,
 	'rix'      : 12,
 	'ritype'   : "normal1",
-	'data'     : {"name": "skuska", "color": "black"},
+	'child'     : {"nams": "skuska", "color": "black"},
 	'username' : 'Dart'
 }
 serializer = ShoppingItemSerializer(data=data)
@@ -45,3 +45,4 @@ print(serializer.is_valid())
 print(serializer.validated_data)
 print(serializer.errors)
 
+serializer.save()
