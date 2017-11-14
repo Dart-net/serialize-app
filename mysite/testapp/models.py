@@ -74,9 +74,9 @@ class ShoppingItemBase(models.Model):
     #     return child
 
 class ShoppingItemNormal1(ShoppingItemBase):
-    name = models.CharField(max_length=128, blank=False, default='meno')
-    color = models.CharField(max_length=128, blank=False, default='cierna')
+    name = models.CharField(max_length=128, blank=False) # default='meno'
+    color = models.CharField(max_length=128, blank=False) # default='cierna'
 
 class ShoppingItemNormal2(ShoppingItemBase):
-    title = models.CharField(max_length=128, blank=False, default='nazov')
-    text = models.CharField(max_length=128, blank=False, default='popis')
+    title = models.CharField(max_length=128, blank=False) # default='nazov'
+    text = models.CharField(max_length=128, blank=False) # default='popis'
